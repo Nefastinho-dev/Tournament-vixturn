@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vixturn E-sport | PROTOCOLE_CORE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #050509; --bg-panel: #0d0d19;
+            --primary-neon: #00f2ff; --secondary-neon: #ff0055;
+            --text-main: #c0c0c0; --text-highlight: #ffffff;
+            --glow-cyan: 0 0 10px rgba(0, 242, 255, 0.7);
+            --glow-magenta: 0 0 15px rgba(255, 0, 85, 0.8);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--bg-dark); color: var(--text-main);
+            background-image: linear-gradient(0deg, transparent 24%, rgba(32, 32, 32, .05) 25%, rgba(32, 32, 32, .05) 26%, transparent 27%, transparent 74%, rgba(32, 32, 32, .05) 75%, rgba(32, 32, 32, .05) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(32, 32, 32, .05) 25%, rgba(32, 32, 32, .05) 26%, transparent 27%, transparent 74%, rgba(32, 32, 32, .05) 75%, rgba(32, 32, 32, .05) 76%, transparent 77%, transparent);
+            background-size: 50px 50px;
+        }
+
+        header {
+            background: black; padding: 4rem 1rem; text-align: center;
+            border-bottom: 4px solid var(--secondary-neon);
+            box-shadow: 0 5px 20px rgba(255, 0, 85, 0.3);
+        }
+        header h1 { color: var(--primary-neon); font-family: 'Orbitron'; font-size: clamp(2rem, 8vw, 4rem); text-shadow: var(--glow-cyan); }
+
+        nav { position: sticky; top: 0; z-index: 2000; background: rgba(0, 0, 0, 0.95); border-bottom: 1px solid var(--primary-neon); text-align: center; }
+        .menu-toggle { display: inline-block; padding: 1rem 2rem; color: var(--primary-neon); font-family: 'Orbitron'; cursor: pointer; text-transform: uppercase; font-weight: bold; }
+        .nav-links { display: none; flex-direction: column; background: #000; }
+        .nav-links.active { display: flex; }
+        .nav-links a { color: var(--text-main); padding: 1rem; text-decoration: none; font-family: 'Orbitron'; border-bottom: 1px solid #111; }
+        .nav-links a:hover { background: var(--primary-neon); color: #000; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
+        section { padding: 4rem 0 2rem 0; border-bottom: 1px solid #1a1a30; min-height: 80vh; }
+        
+        h2 { font-family: 'Orbitron'; color: var(--text-highlight); margin-bottom: 2rem; border-left: 5px solid var(--secondary-neon); padding-left: 1rem; }
+
+        .cyber-panel {
+            background: var(--bg-panel); border: 2px solid #1a1a30; padding: 2rem; position: relative;
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
+        }
+
+        .cyber-button {
+            display: inline-block; width: 100%; padding: 1rem; background: transparent;
+            border: 2px solid var(--secondary-neon); color: var(--secondary-neon);
+            font-family: 'Orbitron'; font-weight: bold; cursor: pointer; text-transform: uppercase;
+            transition: 0.3s; text-align: center; text-decoration: none; margin-top: 1rem;
+        }
+        .cyber-button:hover:not(:disabled) { background: var(--secondary-neon); color: #000; box-shadow: var(--glow-magenta); }
+        .cyber-button:disabled { border-color: #333; color: #555; cursor: not-allowed; }
+
+        .epic-btn { border-color: #fff; color: #fff; }
+        .epic-btn.connected { border-color: #0f0; color: #0f0; background: rgba(0,255,0,0.1); }
+
+        .cyber-form input {
+            width: 100%; background: #000; border: 1px solid var(--primary-neon);
+            color: var(--primary-neon); padding: 1rem; margin: 0.5rem 0 1.5rem 0; font-family: 'Rajdhani'; font-size: 1.1rem;
+        }
+        
+        .cyber-form label {
+            color: var(--text-highlight); font-family: 'Orbitron'; font-size: 0.9rem; letter-spacing: 1px;
+        }
+
+        .mock-captcha {
+            border: 1px solid #333; background: #000; padding: 1rem; display: flex; align-items: center; cursor: pointer; margin-bottom: 1.5rem;
+        }
+        .mock-captcha .box { width: 25px; height: 25px; border: 2px solid #555; margin-right: 15px; display: flex; align-items: center; justify-content: center; }
+        .mock-captcha.verified .box { border-color: #0f0; }
+        .mock-captcha.verified .box::after { content: '✔'; color: #0f0; font-weight: bold; }
+
+        #rules-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 3000; justify-content: center; align-items: center; padding: 1rem;
+        }
+        .modal-content {
+            background: var(--bg-dark); border: 2px solid var(--primary-neon); padding: 2rem; max-width: 600px; width: 100%; box-shadow: var(--glow-cyan);
+        }
+
+        .bracket-container { display: flex; flex-direction: column; gap: 1.5rem; }
+        .match { background: #000; border: 1px solid #333; padding: 1rem; position: relative; border-left: 4px solid #333; }
+        .match.pending { border-left-color: #ff0; }
+        .match.validated { border-left-color: #0f0; box-shadow: 0 0 10px rgba(0,255,0,0.2); }
+        .team-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px dashed #222; }
+        .team-row:last-child { border-bottom: none; }
+        
+        /* Flux Live Style */
+        .live-wrapper { display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; padding: 10px; }
+        .live-column { display: flex; flex-direction: column; gap: 15px; min-width: 260px; }
+        .live-column-title { font-family: 'Orbitron'; font-size: 0.8rem; color: var(--secondary-neon); text-align: center; margin-bottom: 5px; text-shadow: var(--glow-magenta); }
+        .live-match-card { background: #000; border: 1px solid #1a1a30; border-left: 4px solid var(--primary-neon); box-shadow: 4px 4px 0px rgba(0, 242, 255, 0.1); }
+        .live-team { display: flex; justify-content: space-between; padding: 10px 15px; border-bottom: 1px solid #0d0d19; font-size: 1rem; }
+        .live-score { font-weight: bold; color: var(--primary-neon); background: #0d0d19; padding: 0 12px; border-radius: 2px; }
+        .winner-team { background: rgba(0, 242, 255, 0.05); color: #fff; font-weight: bold; }
+        .loading-text { text-align: center; color: #555; font-style: italic; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div id="admin-trigger" style="position:absolute; top:10px; left:10px; color:#333; font-family:monospace; font-size:0.7rem; cursor:pointer;" onclick="toggleAdmin()">SYSTEM_VXT_v4.3</div>
+    <h1>VIXTURN</h1>
+    <p>// ROCKET LEAGUE ARENA_CORE //</p>
+</header>
+
+<nav id="navbar">
+    <div class="menu-toggle" id="current-page" onclick="toggleMenu()">> BIOGRAPHIE <span style="font-size: 0.6rem;">▼</span></div>
+    <div class="nav-links" id="navLinks">
+        <a href="#home" onclick="closeMenu()">BIOGRAPHIE</a>
+        <a href="#register" onclick="closeMenu()">ENREGISTREMENT</a>
+        <a href="#bracket" onclick="closeMenu()">TABLEAU DES MATCHS</a>
+        <a href="#live-pro" onclick="closeMenu()">LIVE PRO (RLCS)</a>
+    </div>
+</nav>
+
+<div class="container">
+    <section id="home">
+        <h2>Archives du Tournoi</h2>
+        <div class="cyber-panel">
+            <h3 style="color: var(--primary-neon); margin-bottom: 1rem;">L'Aube de Vixturn</h3>
+            <p style="margin-bottom: 1rem; font-size: 1.1rem;">Dans les bas-fonds numériques du réseau, là où les algorithmes corrompus dictent la loi, une corporation a décidé de canaliser la rage des pilotes virtuels : <strong>VIXTURN E-SPORT</strong>.</p>
+            <a href="#register" class="cyber-button" style="font-size: 1.3rem;">S'ENREGISTRER AU TOURNOI ➔</a>
+        </div>
+    </section>
+
+    <section id="register">
+        <h2>Protocole d'Enregistrement</h2>
+        <div class="cyber-panel">
+            <form class="cyber-form" id="regForm">
+                <label>NOM DE L'ÉQUIPE</label>
+                <input type="text" id="tName" placeholder="Identifiant de l'escouade..." required>
+                <label>LEADER (Discord ID)</label>
+                <input type="text" id="lName" placeholder="Ex: Shadow#1234" required>
+                <label>RL TRACKER DU LEADER (URL)</label>
+                <input type="url" id="tTracker" placeholder="https://rocketleague.tracker.network/profile/..." required>
+                <label>MMR MOYEN DE L'ÉQUIPE</label>
+                <input type="number" id="tMmr" placeholder="Ex: 1550" min="0" max="3000" required>
+                
+                <button type="button" class="cyber-button epic-btn" id="epicBtn" onclick="simulateEpicAuth()">LIER LE COMPTE EPIC GAMES</button>
+                <br><br>
+                <div class="mock-captcha" id="captchaBox" onclick="simulateCaptcha()">
+                    <div class="box"></div>
+                    <span style="font-family: 'Rajdhani'; font-size: 1.1rem; color: #fff;">Je suis un pilote humain (Vérification Système)</span>
+                </div>
+                <button type="button" id="preSubmitBtn" class="cyber-button" disabled onclick="openRulesModal()">INITIALISER L'INJECTION</button>
+            </form>
+        </div>
+    </section>
+
+    <section id="bracket">
+        <h2>Matrice des Matchs (Tri MMR)</h2>
+        <div class="cyber-panel">
+            <div class="bracket-container" id="dynamic-bracket"></div>
+        </div>
+    </section>
+
+    <section id="live-pro">
+        <h2>Flux Synchro : RLCS Paris Major</h2>
+        <div class="cyber-panel">
+            <p style="margin-bottom: 2rem; color: #888; font-family: monospace;">// STATUT: DATA_STREAM_ACTIVE // SOURCE: LIQUIPEDIA</p>
+            <div class="live-wrapper" id="live-bracket-container">
+                <p class="loading-text">Tentative de connexion aux serveurs de données...</p>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div id="rules-modal">
+    <div class="modal-content">
+        <h2 style="color: var(--secondary-neon);">CONTRAT D'ENGAGEMENT</h2>
+        <ul style="color: var(--text-main); margin-bottom: 2rem; padding-left: 1.5rem;">
+            <li>1. Tout comportement toxique entraîne une exclusion immédiate.</li>
+            <li>2. La décision des administrateurs Vixturn est absolue et finale.</li>
+        </ul>
+        <button id="finalConfirmBtn" class="cyber-button" disabled onclick="finalizeRegistration()">ACCEPTATION REQUISE (10s...)</button>
+        <button class="cyber-button" style="border-color: #555; color: #555; margin-top: 10px;" onclick="closeRulesModal()">ANNULER</button>
+    </div>
+</div>
+
+<footer>// UNIT_ID: VIXTURN_CORE // 2024</footer>
+
+<script>
+    // --- GESTION DU MENU ---
+    function toggleMenu() { document.getElementById('navLinks').classList.toggle('active'); }
+    function closeMenu() { document.getElementById('navLinks').classList.remove('active'); }
+
+    window.addEventListener('scroll', () => {
+        const sections = document.querySelectorAll('section');
+        const scrollPos = window.pageYOffset + 150;
+        sections.forEach(section => {
+            if (scrollPos >= section.offsetTop && scrollPos < (section.offsetTop + section.offsetHeight)) {
+                let text = section.id.toUpperCase().replace('-', ' ');
+                document.getElementById('current-page').innerHTML = `> ${text} <span style="font-size: 0.6rem;">▼</span>`;
+            }
+        });
+    });
+
+    // --- LOGIQUE D'ENREGISTREMENT ---
+    let isCaptchaDone = false; let isEpicDone = false; let timerInterval; let teamsList = []; let isAdmin = false;
+
+    function checkFormReady() {
+        const btn = document.getElementById('preSubmitBtn');
+        const fields = [
+            document.getElementById('tName').value,
+            document.getElementById('lName').value,
+            document.getElementById('tTracker').value,
+            document.getElementById('tMmr').value
+        ];
+        btn.disabled = !(isCaptchaDone && isEpicDone && fields.every(f => f.trim() !== ""));
+    }
+
+    document.querySelectorAll('.cyber-form input').forEach(i => i.addEventListener('input', checkFormReady));
+
+    function simulateEpicAuth() {
+        const btn = document.getElementById('epicBtn'); btn.innerText = "CONNEXION...";
+        setTimeout(() => { btn.innerText = "✓ COMPTE EPIC LIÉ"; btn.classList.add('connected'); isEpicDone = true; checkFormReady(); }, 1500);
+    }
+
+    function simulateCaptcha() {
+        const box = document.getElementById('captchaBox');
+        setTimeout(() => { box.classList.add('verified'); isCaptchaDone = true; checkFormReady(); }, 1000);
+    }
+
+    function openRulesModal() {
+        document.getElementById('rules-modal').style.display = 'flex';
+        let timeLeft = 10;
+        const confirmBtn = document.getElementById('finalConfirmBtn');
+        confirmBtn.disabled = true;
+        timerInterval = setInterval(() => {
+            timeLeft--; confirmBtn.innerText = `ACCEPTATION REQUISE (${timeLeft}s...)`;
+            if (timeLeft <= 0) { clearInterval(timerInterval); confirmBtn.innerText = "S'INSCRIRE"; confirmBtn.disabled = false; }
+        }, 1000);
+    }
+
+    function closeRulesModal() { document.getElementById('rules-modal').style.display = 'none'; clearInterval(timerInterval); }
+
+    function finalizeRegistration() {
+        closeRulesModal();
+        teamsList.push({ 
+            name: document.getElementById('tName').value, 
+            mmr: parseInt(document.getElementById('tMmr').value), 
+            status: 'pending' 
+        });
+        document.getElementById('regForm').reset();
+        renderBracket();
+        document.getElementById('bracket').scrollIntoView();
+    }
+
+    function renderBracket() {
+        const container = document.getElementById('dynamic-bracket');
+        container.innerHTML = teamsList.length === 0 ? "<p>Aucune équipe enregistrée.</p>" : "";
+        let sorted = [...teamsList].sort((a, b) => b.mmr - a.mmr);
+        for (let i = 0; i < sorted.length; i += 2) {
+            const t1 = sorted[i]; const t2 = sorted[i+1] || {name: 'TBD', mmr: '?'};
+            container.innerHTML += `
+                <div class="match pending">
+                    <div class="team-row"><b>${t1.name}</b> (${t1.mmr})</div>
+                    <div class="team-row"><b>${t2.name}</b> (${t2.mmr})</div>
+                </div>`;
+        }
+    }
+
+    function toggleAdmin() { if(prompt("Pass?") === "vixturn-18@") { isAdmin = true; document.getElementById('admin-trigger').style.color = "#0f0"; } }
+
+    // --- LE VRAI SCRAPING AUTOMATIQUE LIQUIPEDIA ---
+    const LIQUI_URL = "https://liquipedia.net/rocketleague/Rocket_League_Championship_Series/2026/Paris_Major/Europe/Open_4";
+    const PROXY_URL = "https://api.allorigins.win/get?url=" + encodeURIComponent(LIQUI_URL);
+
+    async function syncLiquipedia() {
+        try {
+            const response = await fetch(PROXY_URL);
+            const data = await response.json();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(data.contents, "text/html");
+            const matchNodes = doc.querySelectorAll('.brkts-match-nodes .brkts-match-it');
+            
+            if (matchNodes.length > 0) { renderLiveBracket(matchNodes); }
+            else { document.getElementById('live-bracket-container').innerHTML = "<p>En attente des données officielles...</p>"; }
+        } catch (error) { console.error("Erreur Synchro:", error); }
+    }
+
+    function renderLiveBracket(nodes) {
+        const container = document.getElementById('live-bracket-container');
+        container.innerHTML = '';
+        const col1 = document.createElement('div');
+        col1.className = 'live-column';
+        col1.innerHTML = '<div class="live-column-title">MATCHS EN COURS / À VENIR</div>';
+
+        for (let i = 0; i < Math.min(nodes.length, 4); i++) {
+            const teams = nodes[i].querySelectorAll('.brkts-opponent-entry');
+            if(teams.length >= 2) {
+                const name1 = teams[0].querySelector('.brkts-opponent-name-inner a')?.innerText || "TBD";
+                const score1 = teams[0].querySelector('.brkts-bracket-score')?.innerText || "0";
+                const name2 = teams[1].querySelector('.brkts-opponent-name-inner a')?.innerText || "TBD";
+                const score2 = teams[1].querySelector('.brkts-bracket-score')?.innerText || "0";
+                col1.innerHTML += createLiveMatch(name1, name2, score1, score2);
+            }
+        }
+        container.appendChild(col1);
+    }
+
+    function createLiveMatch(t1, t2, s1, s2) {
+        const win1 = parseInt(s1) > parseInt(s2);
+        const win2 = parseInt(s2) > parseInt(s1);
+        return `
+            <div class="live-match-card">
+                <div class="live-team ${win1 ? 'winner-team' : ''}"><span>${t1}</span><span class="live-score">${s1}</span></div>
+                <div class="live-team ${win2 ? 'winner-team' : ''}"><span>${t2}</span><span class="live-score">${s2}</span></div>
+            </div>`;
+    }
+
+    renderBracket();
+    syncLiquipedia();
+    setInterval(syncLiquipedia, 300000);
+</script>
+</body>
+</html>
