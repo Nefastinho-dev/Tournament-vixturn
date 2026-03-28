@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vixturn E-sport | PROTOCOLE_CORE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #050509; --bg-panel: #0d0d19;
+            --primary-neon: #00f2ff; --secondary-neon: #ff0055;
+            --text-main: #c0c0c0; --text-highlight: #ffffff;
+            --glow-cyan: 0 0 10px rgba(0, 242, 255, 0.7);
+            --glow-magenta: 0 0 15px rgba(255, 0, 85, 0.8);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--bg-dark); color: var(--text-main);
+            background-image: linear-gradient(0deg, transparent 24%, rgba(32, 32, 32, .05) 25%, rgba(32, 32, 32, .05) 26%, transparent 27%, transparent 74%, rgba(32, 32, 32, .05) 75%, rgba(32, 32, 32, .05) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(32, 32, 32, .05) 25%, rgba(32, 32, 32, .05) 26%, transparent 27%, transparent 74%, rgba(32, 32, 32, .05) 75%, rgba(32, 32, 32, .05) 76%, transparent 77%, transparent);
+            background-size: 50px 50px;
+        }
+
+        header {
+            background: black; padding: 4rem 1rem; text-align: center;
+            border-bottom: 4px solid var(--secondary-neon);
+            box-shadow: 0 5px 20px rgba(255, 0, 85, 0.3);
+        }
+        header h1 { color: var(--primary-neon); font-family: 'Orbitron'; font-size: clamp(2rem, 8vw, 4rem); text-shadow: var(--glow-cyan); }
+
+        nav { position: sticky; top: 0; z-index: 2000; background: rgba(0, 0, 0, 0.95); border-bottom: 1px solid var(--primary-neon); text-align: center; }
+        .menu-toggle { display: inline-block; padding: 1rem 2rem; color: var(--primary-neon); font-family: 'Orbitron'; cursor: pointer; text-transform: uppercase; font-weight: bold; }
+        .nav-links { display: none; flex-direction: column; background: #000; }
+        .nav-links.active { display: flex; }
+        .nav-links a { color: var(--text-main); padding: 1rem; text-decoration: none; font-family: 'Orbitron'; border-bottom: 1px solid #111; }
+        .nav-links a:hover { background: var(--primary-neon); color: #000; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
+        section { padding: 4rem 0 2rem 0; border-bottom: 1px solid #1a1a30; min-height: 80vh; }
+        
+        h2 { font-family: 'Orbitron'; color: var(--text-highlight); margin-bottom: 2rem; border-left: 5px solid var(--secondary-neon); padding-left: 1rem; }
+
+        .cyber-panel {
+            background: var(--bg-panel); border: 2px solid #1a1a30; padding: 2rem; position: relative;
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
+        }
+
+        .cyber-button {
+            display: inline-block; width: 100%; padding: 1rem; background: transparent;
+            border: 2px solid var(--secondary-neon); color: var(--secondary-neon);
+            font-family: 'Orbitron'; font-weight: bold; cursor: pointer; text-transform: uppercase;
+            transition: 0.3s; text-align: center; text-decoration: none; margin-top: 1rem;
+        }
+        .cyber-button:hover:not(:disabled) { background: var(--secondary-neon); color: #000; box-shadow: var(--glow-magenta); }
+        .cyber-button:disabled { border-color: #333; color: #555; cursor: not-allowed; }
+
+        .cyber-form input {
+            width: 100%; background: #000; border: 1px solid var(--primary-neon);
+            color: var(--primary-neon); padding: 1rem; margin: 0.5rem 0 1.5rem 0; font-family: 'Rajdhani'; font-size: 1.1rem;
+        }
+
+        .mock-captcha {
+            border: 1px solid #333; background: #000; padding: 1rem; display: flex; align-items: center; cursor: pointer; margin-bottom: 1.5rem;
+        }
+        .mock-captcha .box { width: 25px; height: 25px; border: 2px solid #555; margin-right: 15px; }
+        .mock-captcha.verified .box { border: 2px solid #0f0; position: relative; }
+        .mock-captcha.verified .box::after { content: '✔'; color: #0f0; position: absolute; top: -5px; left: 3px; }
+
+        .bracket-container { display: flex; flex-direction: column; gap: 1.5rem; }
+        .match { background: #000; border: 1px solid #333; padding: 1rem; border-left: 4px solid #ff0; }
+        .team-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px dashed #222; }
+
+        /* Style Flux Live */
+        .live-wrapper { display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; }
+        .live-column { display: flex; flex-direction: column; gap: 15px; min-width: 300px; width: 100%; }
+        .live-column-title { font-family: 'Orbitron'; font-size: 0.8rem; color: var(--secondary-neon); text-align: center; margin-bottom: 5px; }
+        .live-match-card { background: #000; border: 1px solid #1a1a30; border-left: 4px solid var(--primary-neon); }
+        .live-team { display: flex; justify-content: space-between; padding: 10px 15px; border-bottom: 1px solid #0d0d19; }
+        .live-score { font-weight: bold; color: var(--primary-neon); background: #0d0d19; padding: 0 10px; }
+        .winner-team { background: rgba(0, 242, 255, 0.1); color: #fff; }
+
+        #rules-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 3000; justify-content: center; align-items: center; padding: 1rem;
+        }
+        .modal-content { background: var(--bg-dark); border: 2px solid var(--primary-neon); padding: 2rem; max-width: 600px; width: 100%; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div id="admin-trigger" style="position:absolute; top:10px; left:10px; color:#333; font-family:monospace; font-size:0.7rem; cursor:pointer;" onclick="toggleAdmin()">SYSTEM_VXT_v4.5</div>
+    <h1>VIXTURN</h1>
+    <p>// ROCKET LEAGUE ARENA_CORE //</p>
+</header>
+
+<nav id="navbar">
+    <div class="menu-toggle" id="current-page" onclick="toggleMenu()">> BIOGRAPHIE <span style="font-size: 0.6rem;">▼</span></div>
+    <div class="nav-links" id="navLinks">
+        <a href="#home" onclick="closeMenu()">BIOGRAPHIE</a>
+        <a href="#register" onclick="closeMenu()">ENREGISTREMENT</a>
+        <a href="#bracket" onclick="closeMenu()">TABLEAU DES MATCHS</a>
+        <a href="#live-pro" onclick="closeMenu()">LIVE PRO (RLCS)</a>
+    </div>
+</nav>
+
+<div class="container">
+    <section id="home">
+        <h2>Archives du Tournoi</h2>
+        <div class="cyber-panel">
+            <h3 style="color: var(--primary-neon); margin-bottom: 1rem;">L'Aube de Vixturn</h3>
+            <p>Bienvenue dans l'arène Vixturn. Préparez vos moteurs.</p>
+            <a href="#register" class="cyber-button">S'ENREGISTRER ➔</a>
+        </div>
+    </section>
+
+    <section id="register">
+        <h2>Enregistrement</h2>
+        <div class="cyber-panel">
+            <form class="cyber-form" id="regForm">
+                <input type="text" id="tName" placeholder="Nom de l'équipe" required>
+                <input type="text" id="lName" placeholder="Leader Discord" required>
+                <input type="url" id="tTracker" placeholder="URL RL Tracker" required>
+                <input type="number" id="tMmr" placeholder="MMR Moyen" required>
+                <button type="button" class="cyber-button" id="epicBtn" onclick="simulateEpicAuth()">LIER EPIC GAMES</button>
+                <div class="mock-captcha" id="captchaBox" onclick="simulateCaptcha()" style="margin-top:20px;">
+                    <div class="box"></div> <span style="color:#fff;">Vérification humaine</span>
+                </div>
+                <button type="button" id="preSubmitBtn" class="cyber-button" disabled onclick="openRulesModal()">VALIDER L'INSCRIPTION</button>
+            </form>
+        </div>
+    </section>
+
+    <section id="bracket">
+        <h2>Matrice des Matchs</h2>
+        <div class="cyber-panel" id="dynamic-bracket"></div>
+    </section>
+
+    <section id="live-pro">
+        <h2>Flux Synchro : RLCS</h2>
+        <div class="cyber-panel">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <p id="sync-status" style="color: #888; font-family: monospace; font-size: 0.8rem;">// STATUT: DATA_STREAM_ACTIVE</p>
+                <button onclick="syncLiquipedia()" class="cyber-button" style="width: auto; margin: 0; padding: 5px 15px; font-size: 0.7rem; border-color: var(--primary-neon); color: var(--primary-neon);">
+                    RAFRAÎCHIR ↻
+                </button>
+            </div>
+            <div class="live-wrapper" id="live-bracket-container">
+                <p style="text-align: center; width: 100%; color: #555;">Connexion aux serveurs Liquipedia...</p>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div id="rules-modal">
+    <div class="modal-content">
+        <h2>RÈGLEMENT</h2>
+        <p>Pas de toxicité. Soyez à l'heure.</p>
+        <button id="finalConfirmBtn" class="cyber-button" disabled onclick="finalizeRegistration()">J'ACCEPTE (10s...)</button>
+    </div>
+</div>
+
+<script>
+    function toggleMenu() { document.getElementById('navLinks').classList.toggle('active'); }
+    function closeMenu() { document.getElementById('navLinks').classList.remove('active'); }
+
+    // --- LOGIQUE INSCRIPTION ---
+    let isCaptchaDone = false, isEpicDone = false, teamsList = [];
+    function checkFormReady() {
+        const btn = document.getElementById('preSubmitBtn');
+        const fields = [document.getElementById('tName').value, document.getElementById('lName').value, document.getElementById('tTracker').value, document.getElementById('tMmr').value];
+        btn.disabled = !(isCaptchaDone && isEpicDone && fields.every(f => f.trim() !== ""));
+    }
+    document.querySelectorAll('.cyber-form input').forEach(i => i.addEventListener('input', checkFormReady));
+    function simulateEpicAuth() { document.getElementById('epicBtn').innerText = "✓ LIÉ"; isEpicDone = true; checkFormReady(); }
+    function simulateCaptcha() { document.getElementById('captchaBox').classList.add('verified'); isCaptchaDone = true; checkFormReady(); }
+    function openRulesModal() {
+        document.getElementById('rules-modal').style.display = 'flex';
+        let sec = 10;
+        const b = document.getElementById('finalConfirmBtn');
+        const t = setInterval(() => {
+            sec--; b.innerText = `J'ACCEPTE (${sec}s)`;
+            if(sec<=0) { clearInterval(t); b.innerText = "S'INSCRIRE"; b.disabled = false; }
+        }, 1000);
+    }
+    function finalizeRegistration() {
+        teamsList.push({ name: document.getElementById('tName').value, mmr: document.getElementById('tMmr').value });
+        document.getElementById('rules-modal').style.display = 'none';
+        renderBracket();
+    }
+    function renderBracket() {
+        const c = document.getElementById('dynamic-bracket');
+        c.innerHTML = teamsList.map(t => `<div class="match"><div class="team-row"><b>${t.name}</b> (${t.mmr})</div></div>`).join('');
+    }
+
+    // --- SCRAPING LIVE ---
+    // Note: Utilisation d'un tournoi 2025 pour assurer l'affichage de données réelles
+    const LIQUI_URL = "https://liquipedia.net/rocketleague/Rocket_League_Championship_Series/2025/Major_1";
+    const PROXY_URL = "https://api.allorigins.win/get?url=" + encodeURIComponent(LIQUI_URL);
+
+    async function syncLiquipedia() {
+        const container = document.getElementById('live-bracket-container');
+        const status = document.getElementById('sync-status');
+        status.innerText = "// SYNCHRONISATION...";
+        
+        try {
+            const res = await fetch(PROXY_URL);
+            const data = await res.json();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(data.contents, "text/html");
+            
+            // On cherche les cellules de match dans les tableaux
+            const matchNodes = doc.querySelectorAll('.brkts-match-it, .matchrow');
+            
+            if (matchNodes.length > 0) {
+                container.innerHTML = '<div class="live-column" id="live-col"></div>';
+                const col = document.getElementById('live-col');
+                let found = 0;
+
+                matchNodes.forEach(node => {
+                    if(found >= 5) return;
+                    const teams = node.querySelectorAll('.brkts-opponent-name-inner, .matchlist-new-team1, .matchlist-new-team2');
+                    const scores = node.querySelectorAll('.brkts-bracket-score, .matchlist-new-score');
+                    
+                    if(teams.length >= 2) {
+                        const t1 = teams[0].innerText.trim() || "TBD";
+                        const t2 = teams[1].innerText.trim() || "TBD";
+                        const s1 = scores[0]?.innerText.trim() || "0";
+                        const s2 = scores[1]?.innerText.trim() || "0";
+                        
+                        col.innerHTML += `
+                            <div class="live-match-card">
+                                <div class="live-team"><span>${t1}</span><span class="live-score">${s1}</span></div>
+                                <div class="live-team"><span>${t2}</span><span class="live-score">${s2}</span></div>
+                            </div>`;
+                        found++;
+                    }
+                });
+                status.innerText = "// DATA_SYNC_SUCCESS";
+            } else {
+                container.innerHTML = "<p>Aucun match actif trouvé sur cette page.</p>";
+            }
+        } catch (e) {
+            status.innerText = "// SYNC_ERROR";
+            container.innerHTML = "<p>Erreur de liaison satellite.</p>";
+        }
+    }
+
+    syncLiquipedia();
+    setInterval(syncLiquipedia, 300000);
+</script>
+</body>
+</html>
